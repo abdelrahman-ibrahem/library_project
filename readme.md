@@ -99,12 +99,10 @@ EMAIL_PORT=2525
   ```
 
 #### **Password Reset (Confirm)**
-- **POST** `/api/auth/password/reset/confirm/`
+- **POST** `/api/auth/password/reset/confirm/<uidb64>/<token>/`
 - **Body:**
   ```json
   {
-    "uid": "string",
-    "token": "string",
     "new_password1": "string",
     "new_password2": "string"
   }
