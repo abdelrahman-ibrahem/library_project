@@ -81,7 +81,7 @@ EMAIL_PORT=2525
 - **Body:**
   ```json
   {
-    "username": "string",
+    "email": "string",
     "password": "string"
   }
   ```
