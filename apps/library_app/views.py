@@ -109,5 +109,6 @@ class BorrowRecordViewSet(viewsets.ModelViewSet):
                     "available_copies": record.book.available_copies
                 }
             )
-
-        return Response({'statmessageus': 'book returned successfully'})
+        
+        serializer = RecordSerializer(records, many=True)
+        return Response({'message': 'books returned successfully', 'data': serializer.data})

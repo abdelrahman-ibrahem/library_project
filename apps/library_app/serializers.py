@@ -210,3 +210,16 @@ class BorrowRecordSerializer(serializers.Serializer):
             )
 
         return borrow_records
+
+
+class RecordSerializer(serializers.ModelSerializer):
+    user = serializers.CharField(source="user.username")
+    library = serializers.CharField(source="library.name")
+    book = serializers.CharField(source="book.title")
+    borrow_date = serializers.DateTimeField(format="%Y-%m-%d")
+    due_date = serializers.DateTimeField(format="%Y-%m-%d")
+    return_date = serializers.DateTimeField(format="%Y-%m-%d", allow_null=True)
+    
+    class Meta:
+        model = BorrowRecord
+        fields = '__all__'
