@@ -181,3 +181,17 @@ EMAIL_PORT=2525
 - **Django Admin:** `/admin/`
 
 ---
+
+## 🔌 WebSocket API
+
+#### **Book Availability**
+- **URL:**
+  ```
+  ws://localhost:8000/ws/books/availability/<book_id>/
+  ```
+- **Authentication:**
+  - You must include your authentication token in the `Authorization` header:
+    ```
+    Authorization: Token <user_token>
+    ```
+---
