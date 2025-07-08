@@ -1,0 +1,91 @@
+version: '3.9'
+
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: library_db
+      POSTGRES_USER: library_user
+      POSTGRES_PASSWORD: library_pass
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
+
+  web:
+    build: .
+    command: bash -c "python manage.py migrate && python manage.py collectstatic --noinput && uvicorn library.asgi:application --host 0.0.0.0 --port 8000 --reload"
+    restart: always
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+      - redis
+    environment:
+      - DEBUG=1
+      - DJANGO_DB_HOST=db
+      - DJANGO_DB_NAME=library_db
+      - DJANGO_DB_USER=library_user
+      - DJANGO_DB_PASSWORD=library_pass
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+      - SECRET_KEY=django-insecure-xm81@)p336wt7#0rjzq+1d0$3$vp#+xum4p64nfa8juj@%(c@c
+      - ALLOWED_HOSTS=*
+      - EMAIL_HOST=sandbox.smtp.mailtrap.io
+      - EMAIL_HOST_USER=d93a0d1fbbb1ec
+      - EMAIL_HOST_PASSWORD=95faf17f83ad9c
+      - EMAIL_PORT=2525
+
+  celery:
+    build: .
+    command: celery -A library worker -l info
+    volumes:
+      - .:/app
+    depends_on:
+      - db
+      - redis
+    environment:
+      - DJANGO_DB_HOST=db
+      - DJANGO_DB_NAME=library_db
+      - DJANGO_DB_USER=library_user
+      - DJANGO_DB_PASSWORD=library_pass
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+      - SECRET_KEY=django-insecure-xm81@)p336wt7#0rjzq+1d0$3$vp#+xum4p64nfa8juj@%(c@c
+      - ALLOWED_HOSTS=*
+      - EMAIL_HOST=sandbox.smtp.mailtrap.io
+      - EMAIL_HOST_USER=d93a0d1fbbb1ec
+      - EMAIL_HOST_PASSWORD=95faf17f83ad9c
+      - EMAIL_PORT=2525
+
+  celery-beat:
+    build: .
+    command: celery -A library beat -l info
+    volumes:
+      - .:/app
+    depends_on:
+      - db
+      - redis
+    environment:
+      - DJANGO_DB_HOST=db
+      - DJANGO_DB_NAME=library_db
+      - DJANGO_DB_USER=library_user
+      - DJANGO_DB_PASSWORD=library_pass
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+      - SECRET_KEY=django-insecure-xm81@)p336wt7#0rjzq+1d0$3$vp#+xum4p64nfa8juj@%(c@c
+      - ALLOWED_HOSTS=*
+      - EMAIL_HOST=sandbox.smtp.mailtrap.io
+      - EMAIL_HOST_USER=d93a0d1fbbb1ec
+      - EMAIL_HOST_PASSWORD=95faf17f83ad9c
+      - EMAIL_PORT=2525
+
+volumes:
+  postgres_data: 
